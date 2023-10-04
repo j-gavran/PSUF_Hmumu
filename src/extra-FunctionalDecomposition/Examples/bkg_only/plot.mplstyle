@@ -1,0 +1,36 @@
+text.usetex:            True
+
+font.family:            Serif
+axes.labelsize:         12
+axes.titlesize:         12
+#text.fontsize:          10
+legend.fontsize:        10
+
+axes.autolimit_mode:    round_numbers
+axes.xmargin:           0
+axes.ymargin:           0
+
+xtick.labelsize:        8
+ytick.labelsize:        8
+xtick.top:              True
+ytick.right:            True
+xtick.direction:        in
+ytick.direction:        in
+
+lines.markersize:       2
+lines.linewidth:        0.75
+lines.markeredgewidth:  0.5
+lines.dotted_pattern:   0.4, 1.2
+ 
+grid.linestyle:         :
+grid.color:             000000
+grid.linewidth:         0.1
+
+errorbar.capsize:       2
+patch.force_edgecolor:  True
+
+axes.prop_cycle:        cycler('color', ['2ca02c', '1f77b4', '6f00ff', 'f4bbff', '9467bd'])
+
+#axes.prop_cycle:        cycler('color', ['d62728', 'ff7f0e', 'dbdb8d', '2ca02c', '1f77b4', '6f00ff', 'f4bbff', '9467bd'])
+
+
