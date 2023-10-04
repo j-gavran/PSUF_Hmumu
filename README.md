@@ -8,6 +8,8 @@
 
 V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje naloge.
 
+#### 1. del
+
 - Iz surovih ("raw") podatkov zgeneriraj svoje histograme s pomočjo predpripravljene skripte `create_histograms.py`, 
 pri kateri lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a.
 Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`.
@@ -23,6 +25,8 @@ Dobiš funkcijo/vrednosti predalov $`m(x_k)`$.
 
 - Prilagodi funkcijo CB histogramu simuliranega signala, pri čemer upoštevaj še dodatni normalizacijski faktor. Dobiš 
 funkcijo/vrednosti predalov $`s(x_k)`$.
+
+#### 2. del
 
 - Ker simulacija ozadja ni vedno najboljša, se po navadi za oceno ozadja raje vzame izmerjene podatke, pri čemer pa je 
 potrebno izključiti območje, kjer pričakujemo signal ("blinding") - nočemo fitati še signala! Prilagodi torej funkcijo 
