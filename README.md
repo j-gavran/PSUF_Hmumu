@@ -54,7 +54,7 @@ Zelo dober tutorial za uporabo VSCode s Pythonom je [tukaj](https://pycon.switow
 
 ### Pridobitev kode iz repozitorija
 ```
-git clone https://github.com/j-gavran/PSUF_Higgs.git
+git clone https://github.com/j-gavran/PSUF_Hmumu.git
 ```
 
 ### Postavitev virtualnega okolja
