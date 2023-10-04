@@ -79,3 +79,7 @@ V virtualnem okolju se namestijo knjižnice, ki so potrebne za izvajanje program
 ```
 pip install -r requirements.txt
 ```
+Probleme s Python path importi se  reši z:
+```
+export PYTHONPATH=.
+```
