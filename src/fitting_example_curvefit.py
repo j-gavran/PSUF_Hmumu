@@ -10,7 +10,7 @@ with np.load(inFileName) as data:
     bin_errors = data["bin_errors"]
 
 
-poly3 = lambda m, a, b, c, d: a + b * m + c * m ** 2 + d * m ** 3
+poly3 = lambda m, a, b, c, d: a + b * m + c * m**2 + d * m**3
 popt, pcov = curve_fit(poly3, bin_centers, bin_values, sigma=bin_errors, p0=np.ones(4))
 
 std = np.sqrt(np.diag(pcov))
@@ -23,4 +23,5 @@ plt.errorbar(bin_centers, bin_values, bin_errors, xerrs, fmt="none", color="b", 
 plt.plot(bin_centers, fit_values, "g-", label="fit poly3")
 plt.legend()
 plt.tight_layout()
+plt.savefig("src/plots/poly3_fit_function.pdf")
 plt.show()

@@ -33,7 +33,7 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
         # Get correct weights
         wts = ds["CombWeight"]
         # for MC: sum of weights squared, for data: N
-        wts2 = wts ** 2
+        wts2 = wts**2
 
         # Firstly, get correct number of bin_values
         bin_values, _ = np.histogram(all_events, bins=n_bins, range=x_range, weights=wts)  # wts!
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     datadir_input = "src/DATA/raw_data/"  # Directory to raw data, change this!
     datadir_output = "src/DATA/generated_histograms/"  # Directory to generated histograms, change/create this!
 
-    download_files = False
+    download_files = True
 
     # download files from cernbox
     if download_files:
@@ -128,12 +128,12 @@ if __name__ == "__main__":
         url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/mc_sig.h5", datadir_input)
         url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/data.h5", datadir_input)
 
-    # x_range = (110, 160)  # m_mumu energy interval (110.,160.) GeV for Higgs
+    x_range = (110, 160)  # m_mumu energy interval (110.,160.) GeV for Higgs
 
     # If n_bins is an int, it defines the number of equal-width bins in the given range.
     # If n_bins is a sequence, it defines a monotonically increasing array of bin edges,
     # including the rightmost edge, allowing for non-uniform bin widths.
-    n_bins = [0, 100, 110, 120, 130, 140, 150, 200, 250]
+    n_bins = 60
 
     ds_bkg = "mc_bkg_new"  # filename for Background simulations (.h5)
     ds_sig = "mc_sig"  # filename for Signal simulations (.h5)

@@ -11,13 +11,13 @@ def CrystalBall(x, A, aL, aR, nL, nR, mCB, sCB):
     funclist = [
         lambda x: A
         * (nL / np.abs(aL)) ** nL
-        * np.exp(-(aL ** 2) / 2)
+        * np.exp(-(aL**2) / 2)
         * (nL / np.abs(aL) - np.abs(aL) - (x - mCB) / sCB) ** (-nL),
         lambda x: A
         * (nR / np.abs(aR)) ** nR
-        * np.exp(-(aR ** 2) / 2)
+        * np.exp(-(aR**2) / 2)
         * (nR / np.abs(aR) - np.abs(aR) + (x - mCB) / sCB) ** (-nR),
-        lambda x: A * np.exp(-((x - mCB) ** 2) / (2 * sCB ** 2)),
+        lambda x: A * np.exp(-((x - mCB) ** 2) / (2 * sCB**2)),
     ]
     return np.piecewise(x, condlist, funclist)
 
@@ -68,8 +68,9 @@ if __name__ == "__main__":
     plt.legend(fontsize=fontsize)
     plt.xticks(size=fontsize)
     plt.yticks(size=fontsize)
-    plt.tight_layout()
     plt.grid()
+    plt.tight_layout()
+    plt.savefig("src/plots/fitting_example_CB.pdf")
     plt.show()
 
     # Print out the parameters
