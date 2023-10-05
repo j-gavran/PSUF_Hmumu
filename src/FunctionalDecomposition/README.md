@@ -1,3 +1,5 @@
+# Functional Decomposition
+
 This package is a self-contained implementation of functional decomposition, an
 unbinned, parametric solution for fitting mass spectra, conducting searches and
 producing limits. FD decomposes a dataset into a complete set of orthogonal
@@ -6,8 +8,10 @@ from the data by direct computation.  It uses a penalized likelihood to
 determine the appropriate number of terms to retain from the infinite series.
 
 -------------------------
+
 RUNNING THE EXAMPLE CASES
 -------------------------
+
 There are three examples provided, with increasing levels of complexity. These
 are:
 
@@ -87,4 +91,3 @@ not accidentally use values computed using a different configuration.  If you'd
 like to force FD to completely re-run from scratch, just delete the Cache
 directory. It will be automatically re-created and re-populated the next time
 'fd_scan.py' is run.
-
