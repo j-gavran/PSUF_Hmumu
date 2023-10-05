@@ -7,8 +7,6 @@ functions (the orthonormal exponentials), whose coefficients can be extracted
 from the data by direct computation.  It uses a penalized likelihood to
 determine the appropriate number of terms to retain from the infinite series.
 
--------------------------
-
 RUNNING THE EXAMPLE CASES
 -------------------------
 
