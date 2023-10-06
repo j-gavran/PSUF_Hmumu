@@ -10,14 +10,14 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje n
 
 #### 1. del
 
-- Iz surovih ("raw") podatkov zgeneriraj svoje histograme s pomočjo predpripravljene skripte `create_histograms.py`, 
+- Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!) s pomočjo predpripravljene skripte `create_histograms.py`, 
 pri kateri lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a.
 Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imate
 že nekaj generiranih histogramov v `src/DATA/original_histograms/`, ki jih lahko uporabite namesto generacije novih
 histogramov in nalaganja podatkov.
 
-- Ko imaš zgenerirane svoje histograme, jih lahko izrišeš s pomočjo skripte `visualize_data.py` (ustrezno s prejšnjo točko 
-spremeni ime datotek, ki jih nalagaš).
+- Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko izrišeš s pomočjo skripte `visualize_data.py`
+(ustrezno s prejšnjo točko spremeni ime datotek, ki jih nalagaš).
 
 - Preveri, če so napake res pravilno upoštevane. Lahko jih namenoma pokvariš in ponoviš prva dva koraka, da vidiš vpliv.
 
@@ -79,6 +79,7 @@ Za izhod iz okolja se uporabi ukaz:
 ```
 deactivate
 ```
+Vse knjižnice si lahko namestiš tudi direktno brez uporabe tega okolja.
 
 ### Namestitev knjižnic
 V virtualnem okolju se namestijo knjižnice, ki so potrebne za izvajanje programa. Knjižnice se namestijo z ukazom:
