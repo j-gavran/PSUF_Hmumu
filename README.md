@@ -23,10 +23,10 @@ histogramov in nalaganja podatkov.
 
 - Da se spoznaš z osnovnim fitanjem, najprej zgladi histogram simuliranega ozadja ("simulated background") s pomočjo 
 preprostejših matematičnih funkcij in nadaljuj do različnih teoretično podkrepljenih nastavkov (CMS, ATLAS nastavki). 
-Dobiš funkcijo/vrednosti predalov $`m(x_k)`$.
+Dobiš funkcijo/vrednosti predalov $`m(x_k)`$. Poglej si primera v `fitting_example_curvefit.py`, `cms_fit_function.py` in `atlas_fit_function.py`.
 
 - Prilagodi funkcijo CB histogramu simuliranega signala, pri čemer upoštevaj še dodatni normalizacijski faktor. Dobiš 
-funkcijo/vrednosti predalov $`s(x_k)`$.
+funkcijo/vrednosti predalov $`s(x_k)`$. Primer je na voljo v `fitting_example_CB.py`.
 
 #### 2. del
 
