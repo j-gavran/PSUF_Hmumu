@@ -142,6 +142,6 @@ if __name__ == "__main__":
     datasets = [ds_bkg, ds_sig, ds_data]
     labels = ["Background", "Signal", "Data"]
 
-    dirs = make_histograms(datadir_input, datadir_output, labels, datasets, n_bins)
+    dirs = make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_range=x_range)
 
     print(f"Saved histograms to {dirs} with {n_bins}.")
