@@ -10,21 +10,23 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje n
 
 #### 1. del
 
-- Iz surovih ("raw") podatkov zgeneriraj svoje histograme s pomočjo predpripravljene skripte `create_histograms.py`, 
+- Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!) s pomočjo predpripravljene skripte `create_histograms.py`, 
 pri kateri lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a.
-Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`.
+Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imaš
+že nekaj generiranih histogramov v `src/DATA/original_histograms/`, ki jih lahko uporabiš namesto generacije novih
+histogramov in nalaganja podatkov.
 
-- Ko imaš zgenerirane svoje histograme, jih lahko izrišeš s pomočjo skripte `visualize_data.py` (ustrezno s prejšnjo točko 
-spremeni ime datotek, ki jih nalagaš).
+- Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko izrišeš s pomočjo skripte `visualize_data.py`
+(ustrezno s prejšnjo točko spremeni ime datotek, ki jih nalagaš).
 
 - Preveri, če so napake res pravilno upoštevane. Lahko jih namenoma pokvariš in ponoviš prva dva koraka, da vidiš vpliv.
 
 - Da se spoznaš z osnovnim fitanjem, najprej zgladi histogram simuliranega ozadja ("simulated background") s pomočjo 
 preprostejših matematičnih funkcij in nadaljuj do različnih teoretično podkrepljenih nastavkov (CMS, ATLAS nastavki). 
-Dobiš funkcijo/vrednosti predalov $`m(x_k)`$.
+Dobiš funkcijo/vrednosti predalov $`m(x_k)`$. Poglej si primere v `fitting_example_curvefit.py`, `cms_fit_function.py` in `atlas_fit_function.py`.
 
 - Prilagodi funkcijo CB histogramu simuliranega signala, pri čemer upoštevaj še dodatni normalizacijski faktor. Dobiš 
-funkcijo/vrednosti predalov $`s(x_k)`$.
+funkcijo/vrednosti predalov $`s(x_k)`$. Primer je na voljo v `fitting_example_CB.py`.
 
 #### 2. del
 
@@ -77,6 +79,7 @@ Za izhod iz okolja se uporabi ukaz:
 ```
 deactivate
 ```
+Vse knjižnice si lahko namestiš tudi direktno brez uporabe tega okolja.
 
 ### Namestitev knjižnic
 V virtualnem okolju se namestijo knjižnice, ki so potrebne za izvajanje programa. Knjižnice se namestijo z ukazom:
