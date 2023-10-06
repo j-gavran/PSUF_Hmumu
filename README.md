@@ -12,8 +12,8 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje n
 
 - Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!) s pomočjo predpripravljene skripte `create_histograms.py`, 
 pri kateri lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a.
-Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imate
-že nekaj generiranih histogramov v `src/DATA/original_histograms/`, ki jih lahko uporabite namesto generacije novih
+Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imaš
+že nekaj generiranih histogramov v `src/DATA/original_histograms/`, ki jih lahko uporabiš namesto generacije novih
 histogramov in nalaganja podatkov.
 
 - Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko izrišeš s pomočjo skripte `visualize_data.py`
