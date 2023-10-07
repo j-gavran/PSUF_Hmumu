@@ -1,18 +1,19 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import ConstantKernel
-from custom_kernels import Gibbs, LinearNoiseKernel
-import matplotlib.pyplot as plt
 
+from custom_kernels import Gibbs, LinearNoiseKernel
 
 ########### User Defined Options ##########
-inFileName = "DATA/original_histograms/mass_mm_higgs_Background.npz"
+inFileName = "src/DATA/original_histograms/mass_mm_higgs_Background.npz"
 with np.load(inFileName) as data:
-    bin_edges = data['bin_edges']
-    bin_centers = data['bin_centers']
-    bin_values = data['bin_values']
-    bin_errors = data['bin_errors']
+    bin_edges = data["bin_edges"]
+    bin_centers = data["bin_centers"]
+    bin_values = data["bin_values"]
+    bin_errors = data["bin_errors"]
+
 
 # Whether or not to calculate systematic error contribution by varying the length scale
 calculateSystematics = True
@@ -20,7 +21,6 @@ calculateSystematics = True
 # How much (in fractional form) to vary the length scale when doing systematic GP fits
 # i.e. to vary by 20%, set as 0.2
 systVarFrac = 0.02
-
 
 # The hyper-parameter ranges to be used, if not using the outputs of the hyper-par optimization
 Gibbs_l0_bounds = [5, 25]
@@ -37,9 +37,12 @@ useGPRLinearError = False
 useOriginalTemplateError = False
 usePoissonError = False
 
-if(whichErrorTreatment == 1): useGPRLinearError = True
-elif(whichErrorTreatment == 2): useOriginalTemplateError = True
-elif(whichErrorTreatment == 3): usePoissonError = True
+if whichErrorTreatment == 1:
+    useGPRLinearError = True
+elif whichErrorTreatment == 2:
+    useOriginalTemplateError = True
+elif whichErrorTreatment == 3:
+    usePoissonError = True
 
 
 def mySimpleExponential(x, a, b):
@@ -91,23 +94,31 @@ errConst_hi = 1.10 * errConst0
 # Estimate the (decreasing) slope of the magnitude of the GPR error bars
 
 slope_est0 = -1.0 * (bin_errors[0] - bin_errors[-1]) / (bin_centers[0] - bin_centers[-1])
-if(slope_est0 < 10**-5): slope_est0 = 10**-4
+if slope_est0 < 10**-5:
+    slope_est0 = 10**-4
 slope_est_low = 0.5 * slope_est0
 slope_est_hi = 1.05 * slope_est0
 
 
 # Define the GPR Kernel
-if(useGPRLinearError):
-    kernel = (
-        ConstantKernel(constant_value=1.0, constant_value_bounds=(const_low, const_hi))
-        * Gibbs(l0=Gibbs_l0, l0_bounds=(Gibbs_l0_bounds[0], Gibbs_l0_bounds[1]), l_slope=Gibbs_l_slope, l_slope_bounds=(Gibbs_l_slope_bounds[0], Gibbs_l_slope_bounds[1]))
-        + ConstantKernel(constant_value=1.0, constant_value_bounds=(1.0, 1.0))
-        * LinearNoiseKernel(noise_level=errConst0, noise_level_bounds=(errConst_low, errConst_hi), b=slope_est0, b_bounds=(slope_est_low, slope_est_hi))
+if useGPRLinearError:
+    kernel = ConstantKernel(constant_value=1.0, constant_value_bounds=(const_low, const_hi)) * Gibbs(
+        l0=Gibbs_l0,
+        l0_bounds=(Gibbs_l0_bounds[0], Gibbs_l0_bounds[1]),
+        l_slope=Gibbs_l_slope,
+        l_slope_bounds=(Gibbs_l_slope_bounds[0], Gibbs_l_slope_bounds[1]),
+    ) + ConstantKernel(constant_value=1.0, constant_value_bounds=(1.0, 1.0)) * LinearNoiseKernel(
+        noise_level=errConst0,
+        noise_level_bounds=(errConst_low, errConst_hi),
+        b=slope_est0,
+        b_bounds=(slope_est_low, slope_est_hi),
     )
 else:
-    kernel = (
-        ConstantKernel(constant_value=1.0, constant_value_bounds=(const_low, const_hi))
-        * Gibbs(l0=Gibbs_l0, l0_bounds=(Gibbs_l0_bounds[0], Gibbs_l0_bounds[1]), l_slope=Gibbs_l_slope, l_slope_bounds=(Gibbs_l_slope_bounds[0], Gibbs_l_slope_bounds[1]))
+    kernel = ConstantKernel(constant_value=1.0, constant_value_bounds=(const_low, const_hi)) * Gibbs(
+        l0=Gibbs_l0,
+        l0_bounds=(Gibbs_l0_bounds[0], Gibbs_l0_bounds[1]),
+        l_slope=Gibbs_l_slope,
+        l_slope_bounds=(Gibbs_l_slope_bounds[0], Gibbs_l_slope_bounds[1]),
     )
 
 # Fit the GPR Kernel to the input template
@@ -118,7 +129,7 @@ gpr.fit(bin_centers.reshape(len(bin_centers), 1), (bin_values - myBaseLine).rave
 # If so, re-do the GPR fitting, but with a flat prior instead of exponential prior
 gprPrediction, gprCov = gpr.predict(bin_centers.reshape(len(bin_centers), 1), return_cov=True)
 
-if(np.sqrt((gprPrediction * gprPrediction).sum()) / bin_values.sum() < 0.0001):
+if np.sqrt((gprPrediction * gprPrediction).sum()) / bin_values.sum() < 0.0001:
     myBaseLine = np.zeros(len(bin_values))
     gpr = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=3, normalize_y=True)
     gpr.fit(bin_centers.reshape(len(bin_centers), 1), (bin_values - myBaseLine).ravel())
@@ -129,21 +140,23 @@ gprPrediction = gprPrediction + myBaseLine
 
 
 # Determine the error bars based on requested error treatment
-outputErrorBars = np.zeros(len(gprPrediction), 'd')
+outputErrorBars = np.zeros(len(gprPrediction), "d")
 
 # Use the GPR template's linear error kernel for errors
-if(useGPRLinearError): outputErrorBars = gprError.copy()
+if useGPRLinearError:
+    outputErrorBars = gprError.copy()
 
 # Use the original template's errors
-if(useOriginalTemplateError): outputErrorBars = bin_errors.copy()
+if useOriginalTemplateError:
+    outputErrorBars = bin_errors.copy()
 
 # Calculate Poisson errors
-if(usePoissonError):
+if usePoissonError:
     for i in range(len(gprPrediction)):
         outputErrorBars[i] = np.sqrt(gprPrediction[i])
 
 # Calculate Systematic Errors by Varying the Length Scale
-if(calculateSystematics):
+if calculateSystematics:
     print("\n Peforming systematics variations of the lengths scales\n")
 
     # Define the systematic kernels (vary the length scale by some fraction, keeping the other parameters constant
@@ -153,7 +166,7 @@ if(calculateSystematics):
     for ipar, hyperpar in enumerate(gpr.kernel_.hyperparameters):
         theta_up.append(theta_nom[ipar])
         theta_down.append(theta_nom[ipar])
-        if(('l0' in hyperpar.name) or ('length_scale' in hyperpar.name)):
+        if ("l0" in hyperpar.name) or ("length_scale" in hyperpar.name):
             theta_up[ipar] += np.log(1.0 + systVarFrac)
             theta_down[ipar] += np.log(1.0 - systVarFrac)
 
@@ -174,9 +187,9 @@ if(calculateSystematics):
     gprPrediction_systDown = gprPrediction_systDown + myBaseLine
 
     # Calculate the error bars (maximum of the two variations)
-    gprHiErrors = np.zeros(len(gprPrediction), 'd')
-    gprLowErrors = np.zeros(len(gprPrediction), 'd')
-    gprSystErrors = np.zeros(len(gprPrediction), 'd')
+    gprHiErrors = np.zeros(len(gprPrediction), "d")
+    gprLowErrors = np.zeros(len(gprPrediction), "d")
+    gprSystErrors = np.zeros(len(gprPrediction), "d")
     for i in range(len(gprPrediction)):
         gprHiErrors[i] = np.abs(gprPrediction[i] - np.max([gprPrediction_systUp[i], gprPrediction_systDown[i]]))
         gprLowErrors[i] = np.abs(gprPrediction[i] - np.min([gprPrediction_systUp[i], gprPrediction_systDown[i]]))
@@ -191,28 +204,28 @@ if(calculateSystematics):
 ##########################################################################################################
 # PLOT
 ##########################################################################################################
-f, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 6), gridspec_kw={'height_ratios': [3, 1]})
+f, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(6, 6), gridspec_kw={"height_ratios": [3, 1]})
 
 
-col = 'g'
-cols = 'r'
+col = "g"
+cols = "r"
 logy = False
 ymax = 1.2 * 10**5
 yloc = 0.95
 
-xwidths = (bin_edges[1:] - bin_edges[:-1])
+xwidths = bin_edges[1:] - bin_edges[:-1]
 xerrs = 0.4 * xwidths
 
 ys = bin_values
 yerrs = bin_errors
-ax1.errorbar(bin_centers, ys, yerrs, xerrs, fmt=".", color='k', ecolor='k')  # fmt='.k'
+ax1.errorbar(bin_centers, ys, yerrs, xerrs, fmt=".", color="k", ecolor="k")  # fmt='.k'
 
 gys = gprPrediction
 gerrs = outputErrorBars
 ax1.errorbar(bin_centers, gys, gerrs, xerrs, fmt="none", color=col, ecolor=col)  # fmt='.k'
 
 
-if(calculateSystematics):
+if calculateSystematics:
     yval = gprPrediction
     yvalm = gprPrediction_systDown
     yvalp = gprPrediction_systUp
@@ -220,10 +233,11 @@ if(calculateSystematics):
     ax1.fill_between(bin_centers, yvalm, yvalp, color=col, alpha=0.2)
 
 import matplotlib.lines as mlines
-gprlab = mlines.Line2D([], [], color=col, markersize=10, label='Smoothed GPR')
-orglab = mlines.Line2D([], [], color='k', marker=".", lw=0, markersize=10, label='Original histogram')
 
-ax1.legend(handles=[orglab, gprlab], loc='upper right', frameon=0, bbox_to_anchor=(0.95, yloc))
+gprlab = mlines.Line2D([], [], color=col, markersize=10, label="Smoothed GPR")
+orglab = mlines.Line2D([], [], color="k", marker=".", lw=0, markersize=10, label="Original histogram")
+
+ax1.legend(handles=[orglab, gprlab], loc="upper right", frameon=0, bbox_to_anchor=(0.95, yloc))
 
 ax1.set_ylabel("Events/bin")
 ax1.set_xlabel(r"$m_{\mu\mu}$ [GeV]")
@@ -233,24 +247,27 @@ ax1.set_ylim([0.01, ymax])
 
 # prettyfy #1
 from matplotlib import ticker
+
 formatter = ticker.ScalarFormatter(useMathText=True)
 formatter.set_scientific(True)
 formatter.set_powerlimits((-1, 1))
 ax1.yaxis.set_major_formatter(formatter)
 
 ax1.tick_params(labeltop=False, labelright=False)
-plt.xlabel(ax1.get_xlabel(), horizontalalignment='right', x=1.0)
-plt.ylabel(ax1.get_ylabel(), horizontalalignment='right', y=1.0)
+plt.xlabel(ax1.get_xlabel(), horizontalalignment="right", x=1.0)
+plt.ylabel(ax1.get_ylabel(), horizontalalignment="right", y=1.0)
 from matplotlib.ticker import AutoMinorLocator
+
 ax1.xaxis.set_minor_locator(AutoMinorLocator())
 ax1.yaxis.set_minor_locator(AutoMinorLocator())
-ax1.tick_params(axis='y', direction="in", left=1, right=1, which='both')
-ax1.tick_params(axis='x', direction="in", bottom=1, top=1, which='both')
-ax1.tick_params(axis='both', which='major', length=12)
-ax1.tick_params(axis='both', which='minor', length=6)
+ax1.tick_params(axis="y", direction="in", left=1, right=1, which="both")
+ax1.tick_params(axis="x", direction="in", bottom=1, top=1, which="both")
+ax1.tick_params(axis="both", which="major", length=12)
+ax1.tick_params(axis="both", which="minor", length=6)
 
 if logy:
-    from matplotlib.ticker import NullFormatter, LogLocator
+    from matplotlib.ticker import LogLocator, NullFormatter
+
     ax1.set_yscale("log")
     locmin = LogLocator(base=10.0, subs=(0.2, 0.4, 0.6, 0.8, 1, 2, 4, 6, 8, 9, 10))
     locmin = LogLocator(base=10.0, subs=(2, 4, 6, 8, 10))
@@ -264,8 +281,8 @@ zvals = ys / gys
 ry = yerrs / ys
 rb = gerrs / gys
 zerrs = zvals * np.sqrt(ry * ry + rb * rb)
-ax2.errorbar(bin_centers, zvals, xerr=xerrs, yerr=zerrs, fmt='none', color=col, markersize=10)
-ax2.set_ylabel('Org/Smooth')
+ax2.errorbar(bin_centers, zvals, xerr=xerrs, yerr=zerrs, fmt="none", color=col, markersize=10)
+ax2.set_ylabel("Org/Smooth")
 
 
 # fine y-label control for overlap
@@ -278,21 +295,22 @@ if not logy:
 ax2.set_xlabel(r"$m_{\mu\mu}$ [GeV]")
 ax2.set_xlim([bin_edges[0], bin_edges[-1]])
 ax2.set_ylim([0.8, 1.2])
-ax2.axhline(1, color='k', lw=1)
+ax2.axhline(1, color="k", lw=1)
 
 # prettyfy #2
 ax2.tick_params(labeltop=False, labelright=False)
-plt.xlabel(ax2.get_xlabel(), horizontalalignment='right', x=1.0)
-plt.ylabel(ax2.get_ylabel(), horizontalalignment='center', y=0.5)
+plt.xlabel(ax2.get_xlabel(), horizontalalignment="right", x=1.0)
+plt.ylabel(ax2.get_ylabel(), horizontalalignment="center", y=0.5)
 from matplotlib.ticker import AutoMinorLocator
+
 ax2.xaxis.set_minor_locator(AutoMinorLocator())
 ax2.yaxis.set_minor_locator(AutoMinorLocator())
-ax2.tick_params(axis='y', direction="in", left=1, right=1, which='both')
-ax2.tick_params(axis='x', direction="in", bottom=1, top=1, which='both')
-ax2.tick_params(axis='both', which='major', length=12)
-ax2.tick_params(axis='both', which='minor', length=6)
+ax2.tick_params(axis="y", direction="in", left=1, right=1, which="both")
+ax2.tick_params(axis="x", direction="in", bottom=1, top=1, which="both")
+ax2.tick_params(axis="both", which="major", length=12)
+ax2.tick_params(axis="both", which="minor", length=6)
 
 f.subplots_adjust(hspace=0)
-plt.savefig("m_mumu_smooth.pdf", format="pdf")
+plt.savefig("src/plots/GPR_smooth.pdf", format="pdf")
 plt.show()
 plt.close()
