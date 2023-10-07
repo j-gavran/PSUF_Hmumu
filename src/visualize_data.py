@@ -127,6 +127,18 @@ def visualize_histograms(
         return f, (ax1, ax2)
 
 
+def simple_histogram_plot(hist, plot_errs=False, **hist_kwargs):
+    xs, bin_edges, ys, bin_errors = hist
+
+    xwidths = bin_edges[1:] - bin_edges[:-1]
+
+    if plot_errs:
+        plt.errorbar(xs, ys, xerr=0.5 * xwidths, yerr=bin_errors, fmt=".", color="r", markersize=0, lw=0.5, zorder=10)
+        plt.fill_between(xs, ys - bin_errors, ys + bin_errors, color="r", alpha=0.2)
+
+    plt.hist(xs, bin_edges, weights=ys, histtype="step", **hist_kwargs)
+
+
 if __name__ == "__main__":
     labels = ["Background", "Signal", "Data"]
     hist_name = "mass_mm_higgs"

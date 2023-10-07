@@ -1,6 +1,10 @@
 import numpy as np
-from sklearn.gaussian_process.kernels import Hyperparameter, Kernel, StationaryKernelMixin
 from scipy.spatial.distance import squareform
+from sklearn.gaussian_process.kernels import (
+    Hyperparameter,
+    Kernel,
+    StationaryKernelMixin,
+)
 
 
 def _convert_to_double(X):
@@ -23,11 +27,11 @@ class Gibbs(Kernel):
 
     @property
     def hyperparameter_l0(self):
-        return(Hyperparameter("l0", "numeric", self.l0_bounds))
+        return Hyperparameter("l0", "numeric", self.l0_bounds)
 
     @property
     def hyperparameter_l_slope(self):
-        return(Hyperparameter("l_slope", "numeric", self.l_slope_bounds))
+        return Hyperparameter("l_slope", "numeric", self.l_slope_bounds)
 
     def __call__(self, X, Y=None, eval_gradient=False):
         """Retrn K(X,Y)"""
@@ -39,7 +43,7 @@ class Gibbs(Kernel):
 
         s = X.shape
         if len(s) != 2:
-            raise ValueError('A 2-dimensional array must be passed.')
+            raise ValueError("A 2-dimensional array must be passed.")
 
         if Y is None:
             m, n = s
@@ -64,9 +68,10 @@ class Gibbs(Kernel):
                 # approximate gradient numerically
                 def f(theta):  # helper function
                     return self.clone_with_theta(theta)(X, Y)
-                return K, _approx_fprime(self.theta, f, 1e-10)
+
+                return K.copy(), _approx_fprime(self.theta, f, 1e-10)
             else:
-                return K
+                return K.copy()
 
         else:
             mx, nx = s
@@ -98,11 +103,10 @@ class Gibbs(Kernel):
                 # approximate gradient numerically
                 def f(theta):  # helper function
                     return self.clone_with_theta(theta)(X, Y)
-                return K, _approx_fprime(self.theta, f, 1e-10)
-            else:
-                return K
 
-        pass  # __call__
+                return K.copy(), _approx_fprime(self.theta, f, 1e-10)
+            else:
+                return K.copy()
 
     def diag(self, X):
         return np.diag(self(X))
@@ -118,6 +122,7 @@ class FallExp(Kernel):
     """Falling exponential kernel
     exp( (d - (x+x'))/(2*a) )
     """
+
     def __init__(self, d=1.0, d_bounds=(1e-5, 1e5), a=1.0, a_bounds=(1e-5, 1e5)):
         self.d = d
         self.d_bounds = d_bounds
@@ -126,20 +131,19 @@ class FallExp(Kernel):
 
     @property
     def hyperparameter_d(self):
-        return(Hyperparameter("d", "numeric", self.d_bounds))
+        return Hyperparameter("d", "numeric", self.d_bounds)
 
     @property
     def hyperparameter_a(self):
-        return(Hyperparameter("a", "numeric", self.a_bounds))
+        return Hyperparameter("a", "numeric", self.a_bounds)
 
     def __call__(self, X, Y=None, eval_gradient=False):
-        """Return K(X,Y)
-        """
+        """Return K(X,Y)"""
         X = np.atleast_2d(X)
 
         s = X.shape
         if len(s) != 2:
-            raise ValueError('A 2-dimensional array must be passed.')
+            raise ValueError("A 2-dimensional array must be passed.")
 
         if Y is None:
             m, n = s
@@ -148,7 +152,7 @@ class FallExp(Kernel):
             t = 0
             for i in range(0, m - 1):
                 for j in range(i + 1, m):
-                    xi_xj = np.dtype('d')
+                    xi_xj = np.dtype("d")
                     xi_xj = X[i] + X[j]
                     K[t] = np.exp((self.d - xi_xj) / (2 * self.a))
                     t = t + 1
@@ -160,8 +164,8 @@ class FallExp(Kernel):
                 # approximate gradient numerically
                 def f(theta):  # helper function
                     return self.clone_with_theta(theta)(X, Y)
+
                 return K, _approx_fprime(self.theta, f, 1e-10)
-                return K, None
             else:
                 return K
 
@@ -174,7 +178,7 @@ class FallExp(Kernel):
             Y = _convert_to_double(Y)
             for i in range(0, mx):
                 for j in range(0, my):
-                    xi_yj = np.dtype('d')
+                    xi_yj = np.dtype("d")
                     xi_yj = X[i] + Y[j]
                     K[i][j] = np.exp((self.d - xi_yj) / (2 * self.a))
 
@@ -184,11 +188,10 @@ class FallExp(Kernel):
                 # approximate gradient numerically
                 def f(theta):  # helper function
                     return self.clone_with_theta(theta)(X, Y)
+
                 return K, _approx_fprime(self.theta, f, 1e-10)
             else:
                 return K
-
-        pass  # __call__
 
     def diag(self, X):
         return np.diag(self(X))
@@ -198,6 +201,7 @@ class FallExp(Kernel):
 
     def __repr__(self):
         return "{0}(d={1:.3g}, a={2:.3g})".format(self.__class__.__name__, self.d, self.a)
+
     pass  # fallExp
 
 
@@ -212,6 +216,7 @@ class LinearNoiseKernel(StationaryKernelMixin, Kernel):
     noise_level : array, shape (n_samples_X, n_features)
         Parameter controlling the noise level (vector of same shape as X)
     """
+
     def __init__(self, noise_level=1.0, noise_level_bounds=(1e-5, 1e5), b=1.0, b_bounds=(1e-5, 1e5)):
         self.noise_level = noise_level
         self.noise_level_bounds = noise_level_bounds
@@ -224,7 +229,7 @@ class LinearNoiseKernel(StationaryKernelMixin, Kernel):
 
     @property
     def hyperparameter_b(self):
-        return(Hyperparameter("b", "numeric", self.b_bounds))
+        return Hyperparameter("b", "numeric", self.b_bounds)
 
     def __call__(self, X, Y=None, eval_gradient=False):
         """Return the kernel k(X, Y) and optionally its gradient.
@@ -257,16 +262,20 @@ class LinearNoiseKernel(StationaryKernelMixin, Kernel):
             K = np.zeros((X.shape[0], X.shape[0]))
             for i in range(0, X.shape[0]):
                 K[i, i] = self.noise_level + (-1.0) * self.b * (X[i][0] - 99.0)
-                if(K[i, i] < 0): K[i, i] = 0.0
+                if K[i, i] < 0:
+                    K[i, i] = 0.0
 
             if eval_gradient:
+
                 def f(theta):
                     return self.clone_with_theta(theta)(X, Y)
-                return K, _approx_fprime(self.theta, f, 1e-10)
-                return K, None
-            else: return K
 
-        else: return np.zeros((X.shape[0], Y.shape[0]))
+                return K, _approx_fprime(self.theta, f, 1e-10)
+            else:
+                return K
+
+        else:
+            return np.zeros((X.shape[0], Y.shape[0]))
 
     def diag(self, X):
         """Returns the diagonal of the kernel k(X, X).
@@ -297,10 +306,10 @@ class LinearNoiseKernel(StationaryKernelMixin, Kernel):
 def _approx_fprime(xk, f, epsilon, args=()):
     f0 = f(*((xk,) + args))
     grad = np.zeros((f0.shape[0], f0.shape[1], len(xk)), float)
-    ei = np.zeros((len(xk), ), float)
+    ei = np.zeros((len(xk),), float)
     for k in range(len(xk)):
         ei[k] = 1.0
         d = epsilon * ei
         grad[:, :, k] = (f(*((xk + d,) + args)) - f0) / d[k]
         ei[k] = 0.0
-    return grad
+    return grad.copy()
