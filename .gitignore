@@ -167,4 +167,4 @@ psuf-venv/
 *.npz
 *.npy
 *.h5
-src/solutions.ipynb
+src/solutions_*.ipynb

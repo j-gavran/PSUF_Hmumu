@@ -4,9 +4,13 @@ import re
 
 import gpytorch
 import matplotlib.pyplot as plt
+import mplhep as hep
 import numpy as np
 import torch
 from tqdm import tqdm
+from uncertainties import unumpy
+
+from src.visualize_data import simple_histogram_plot
 
 
 def load_histogram(hist_file):
@@ -89,6 +93,48 @@ def prepare_histograms(saved_hist_path="src/DATA/original_histograms/", gamma=0.
     return histograms
 
 
+class RescaleData:
+    def __init__(self, rescale_type):
+        self.rescale_type = rescale_type
+        self.unumpy_x = None
+        self.params = None
+
+    def set_data(self, x, x_std=None):
+        if x_std is None:
+            x_std = np.zeros_like(x)
+
+        # Do error propagation automatically - https://en.wikipedia.org/wiki/Propagation_of_uncertainty
+        self.unumpy_x = unumpy.uarray(x, x_std)
+        return self
+
+    def __call__(self, inverse=False):
+        if self.rescale_type == "minmax":
+            return self.minmax_rescale(inverse)
+        elif self.rescale_type == "log":
+            return self.log_rescale(inverse)
+        elif self.rescale_type is None:
+            return unumpy.nominal_values(self.unumpy_x), unumpy.std_devs(self.unumpy_x)
+        else:
+            raise ValueError(f"Unknown rescale type {self.rescale_type}")
+
+    def minmax_rescale(self, inverse):
+        if inverse:
+            res = self.params[0] + (self.params[1] - self.params[0]) * self.unumpy_x
+            return unumpy.nominal_values(res), unumpy.std_devs(res)
+        else:
+            self.params = [self.unumpy_x.min(), self.unumpy_x.max()]
+            res = (self.unumpy_x - self.params[0]) / (self.params[1] - self.params[0])
+            return unumpy.nominal_values(res), unumpy.std_devs(res)
+
+    def log_rescale(self, inverse):
+        if inverse:
+            res = unumpy.exp(self.unumpy_x)
+            return unumpy.nominal_values(res), unumpy.std_devs(res)
+        else:
+            res = unumpy.log(self.unumpy_x)
+            return unumpy.nominal_values(res), unumpy.std_devs(res)
+
+
 class SklearnLikeRBFKernel(gpytorch.kernels.RBFKernel):
     def __init__(self, *args, add_to_daig=None, **kwargs):
         """See: https://github.com/scikit-learn/scikit-learn/blob/d99b728b3a7952b2111cf5e0cb5d14f92c6f3a80/sklearn/gaussian_process/_gpr.py#L343"""
@@ -122,7 +168,16 @@ class ExactGPModel(gpytorch.models.ExactGP):
         return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
 
 
-def train_gpr(train_x, train_y, var=None, lr=0.1, epochs=100, plot_losses=True):
+def train_gpr(train_x, train_y, var=None, lr=0.1, epochs=100):
+    # Transform to torch tensors
+    if not torch.is_tensor(train_x):
+        train_x = torch.from_numpy(train_x.astype(np.float32))
+    if not torch.is_tensor(train_y):
+        train_y = torch.from_numpy(train_y.astype(np.float32))
+    if var is not None and not torch.is_tensor(var):
+        var = torch.from_numpy(var.astype(np.float32))
+
+    # Initialize likelihood and model
     likelihood = gpytorch.likelihoods.GaussianLikelihood()
     model = ExactGPModel(train_x, train_y, likelihood, alpha=var)
 
@@ -151,26 +206,14 @@ def train_gpr(train_x, train_y, var=None, lr=0.1, epochs=100, plot_losses=True):
 
         optimizer.step()
 
-    if plot_losses:
-        plt.plot(range(epochs), loss_lst)
-        plt.title("Loss")
-        plt.savefig("src/plots/gpr_loss.pdf")
-        plt.close()
-
-        plt.plot(range(epochs), lengthscale_lst)
-        plt.title("Lengthscale")
-        plt.savefig("src/plots/gpr_lengthscale.pdf")
-        plt.close()
-
-        plt.plot(range(epochs), noise_lst)
-        plt.title("Noise")
-        plt.savefig("src/plots/gpr_noise.pdf")
-        plt.close()
-
-    return model, likelihood
+    return model, likelihood, [loss_lst, lengthscale_lst, noise_lst]
 
 
-def test_gpr(model, likelihood, test_x, train_x=None, train_y=None, plot=True):
+def test_gpr(model, likelihood, test_x):
+    # Transform to torch tensors
+    if not torch.is_tensor(test_x):
+        test_x = torch.from_numpy(test_x.astype(np.float32))
+
     # Get into evaluation (predictive posterior) mode
     model.eval()
     likelihood.eval()
@@ -181,30 +224,10 @@ def test_gpr(model, likelihood, test_x, train_x=None, train_y=None, plot=True):
         # Get upper and lower confidence bounds
         lower, upper = observed_pred.confidence_region()
 
-    if plot:
-        f, ax = plt.subplots(1, 1)
-        # Plot training data as black stars
-        ax.plot(train_x.numpy(), train_y.numpy(), "k*")
-        # Plot predictive means as blue line
-        ax.plot(test_x.numpy(), observed_pred.mean.numpy(), "b")
-        # Shade between the lower and upper confidence bounds
-        ax.fill_between(test_x.numpy(), lower.numpy(), upper.numpy(), alpha=0.5)
-
-        return f, ax
-
     return [lower.numpy(), upper.numpy()], observed_pred.mean.numpy()
 
 
-if __name__ == "__main__":
-    import mplhep as hep
-
-    from src.visualize_data import simple_histogram_plot
-
-    hep.style.use(hep.style.ATLAS)
-
-    histograms = prepare_histograms(gamma=100.0)
-
-    # plot all regions
+def plot_all_histogram_regions(histograms, path="src/plots/"):
     simple_histogram_plot(histograms["all"]["BlindData"], color="k", ls="--", zorder=10)
     simple_histogram_plot(histograms["higgs"]["Signal"], color="r")
     simple_histogram_plot(histograms["higgs"]["AsimovData"], color="b")
@@ -217,41 +240,112 @@ if __name__ == "__main__":
     plt.axvline(120, ls="--", c="k", lw=1)
     plt.axvline(130, ls="--", c="k", lw=1)
     plt.tight_layout()
-    plt.savefig("src/plots/regions.pdf")
+    plt.savefig(path + "regions.pdf")
+    plt.show()
+    plt.close()
 
-    # gpr
-    train_bkg = histograms["higgs"]["BlindData"]
-    test = histograms["higgs"]["Data"]
 
-    # rescale to [0, 1]
-    train_bin_centers, train_bin_edges, train_bin_values, train_bin_errors = train_bkg
-    test_bin_centers, test_bin_edges, test_bin_values, test_bin_errors = test
+def plot_losses(loss_lst, lengthscale_lst, noise_lst, path="src/plots/"):
+    epochs = len(loss_lst)
 
-    train_x = torch.from_numpy(train_bin_centers.astype(np.float32))
-    train_x = (train_x - train_x.min()) / (train_x.max() - train_x.min())
+    plt.plot(range(epochs), loss_lst, lw=2)
+    plt.ylabel("Loss")
+    plt.xlabel("epochs")
+    plt.savefig(path + "GPR_loss.pdf")
+    plt.show()
+    plt.close()
 
-    train_y = torch.from_numpy(train_bin_values.astype(np.float32))
-    train_y = (train_y - train_y.min()) / (train_y.max() - train_y.min())
+    plt.plot(range(epochs), lengthscale_lst, lw=2)
+    plt.ylabel("Lengthscale")
+    plt.xlabel("epochs")
+    plt.savefig(path + "GPR_lengthscale.pdf")
+    plt.show()
+    plt.close()
 
-    test_x = torch.linspace(train_bin_centers[0], train_bin_centers[-1], 100)
-    test_x = (test_x - test_x.min()) / (test_x.max() - test_x.min())
+    plt.plot(range(epochs), noise_lst, lw=2)
+    plt.ylabel("Noise")
+    plt.xlabel("epochs")
+    plt.savefig(path + "GPR_noise.pdf")
+    plt.show()
+    plt.close()
 
-    noise_std = torch.from_numpy(train_bin_errors.astype(np.float32))
-    noise_var = noise_std**2 * (train_y / torch.from_numpy(train_bin_values))
 
-    # fit
-    model, likelihood = train_gpr(train_x, train_y, var=noise_var, lr=0.1, epochs=100)
+def plot_predictions(lower_upper, train_x, train_y, test_x, mean, true_x=None, true_y=None, path="src/plots/"):
+    lower, upper = lower_upper
 
-    # predict and plot
-    f, ax = test_gpr(model, likelihood, test_x, train_x, train_y, plot=True)
+    f, ax = plt.subplots(1, 1)
+    ax.plot(train_x, train_y, "k*", label="Train data")
+    ax.plot(test_x, mean, "b", label="Predicted mean")
+    ax.fill_between(test_x, lower, upper, alpha=0.5, label="Confidence")
 
-    unblind_test = histograms["higgs"]["Data"]
-    bin_centers, bin_edges, bin_values, bin_errors = unblind_test
+    if true_x is not None and true_y is not None:
+        ax.scatter(true_x, true_y, color="r", zorder=10, alpha=0.9, s=10, label="True labels")
 
-    bin_centers = (bin_centers - bin_centers.min()) / (bin_centers.max() - bin_centers.min())
-    bin_values = (bin_values - bin_values.min()) / (bin_values.max() - bin_values.min())
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.legend()
+    plt.tight_layout()
+    f.savefig(path + "GPR_predictions.pdf")
+    plt.show()
+    plt.close()
 
-    ax.scatter(bin_centers, bin_values, color="r", zorder=10, alpha=0.9, s=10)
-    ax.legend(["Observed Data", "Mean", "Confidence", "Unblinded Data"])
 
-    f.savefig("src/plots/GPR_torch.pdf")
+if __name__ == "__main__":
+    hep.style.use(hep.style.ATLAS)
+
+    histograms = prepare_histograms(gamma=100.0)
+
+    # plot all regions
+    plot_all_histogram_regions(histograms)
+
+    # None, "minmax", "log"
+    rescale_type = "minmax"
+
+    # train data
+    bin_centers, bin_edges, bin_values, bin_errors = histograms["higgs"]["BlindData"]
+    train_y_data = RescaleData(rescale_type).set_data(bin_values, bin_errors)
+    train_x_data = RescaleData(rescale_type).set_data(bin_centers, np.diff(bin_edges))
+
+    # test data
+    bin_centers, bin_edges, bin_values, bin_errors = histograms["higgs"]["Data"]
+    test_y_data = RescaleData(rescale_type).set_data(bin_values, bin_errors)
+    test_x_data = RescaleData(rescale_type).set_data(bin_centers, np.diff(bin_edges))
+
+    # call rescale
+    train_y, train_y_std = train_y_data()
+    train_x, _ = train_x_data()
+
+    test_y, test_y_std = test_y_data()
+    test_x, test_x_std = test_x_data()
+
+    # train GPR
+    model, likelihood, losses = train_gpr(train_x, train_y, var=train_y_std**2, epochs=500)
+    plot_losses(*losses)
+
+    # test GPR
+    lower_upper, mean = test_gpr(model, likelihood, test_x)
+    plot_predictions(lower_upper, train_x, train_y, test_x, mean, true_x=test_x, true_y=test_y)
+
+    # scale back predictions
+    std = lower_upper[1] - lower_upper[0]
+
+    train_y_data.set_data(mean, std)
+    test_x_data.set_data(test_x, test_x_std)
+
+    # final prediction with error
+    yp, yp_std = train_y_data(inverse=True)
+    x, x_std = test_x_data(inverse=True)
+
+    # save final prediction
+    histograms["higgs"]["Predicted"] = [x, bin_edges, yp, yp_std]
+
+    # plot final result
+    plt.plot(x, yp, ls="--", c="k", lw=2, label="fit")
+    plt.fill_between(x, yp - yp_std, yp + yp_std, alpha=0.5, label="confidence")
+    plt.legend()
+    plt.xlabel(r"$m_{\mu\mu}$")
+    plt.ylabel(r"$N$")
+    plt.tight_layout()
+    plt.savefig("src/plots/GPR_torch_final_result.pdf")
+    plt.show()
+    plt.close()

@@ -46,14 +46,14 @@ def Background(x, a, b, c, d, e, f, g, h, func=atlas_invMass_mumu):
         return func(chebval(x, [a, b, c, d, e, f, g, h]), x)
     else:
         # Choose some weighting function
-        return func(np.exp(a * x) + b * x ** 3 + c * x ** 2 + d * x + h, x)
+        return func(np.exp(a * x) + b * x**3 + c * x**2 + d * x + h, x)
 
 
 def return_p0(chebyshev):
     if chebyshev:
-        return (10 ** 6, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+        return (10**6, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
     else:
-        return (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10 ** 6)
+        return (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10**6)
 
 
 popt, pcov = curve_fit(Background, bin_centers, bin_values, sigma=bin_errors, p0=return_p0(chebyshev))
@@ -89,7 +89,7 @@ ax2.grid(True)
 
 f.tight_layout()
 if save:
-    plt.savefig("SimBkg_fit.pdf")
+    plt.savefig("src/plots/SimBkg_fit.pdf")
 
 
 ########################################################################################################################
@@ -158,7 +158,7 @@ ax2.grid(True)
 
 f.tight_layout()
 if save:
-    plt.savefig("DataBkg_fit.pdf")
+    plt.savefig("src/plots/DataBkg_fit.pdf")
 
 
 ########################################################################################################################
@@ -177,7 +177,7 @@ plt.legend(fontsize=20)
 plt.tight_layout()
 plt.grid()
 if save:
-    plt.savefig("Extracted_signal.pdf")
+    plt.savefig("src/plots/Extracted_signal.pdf")
 
 
 ########################################################################################################################
@@ -197,13 +197,13 @@ def CB(x, A, aL, aR, nL, nR, mCB, sCB):
         [
             lambda x: A
             * (nL / np.abs(aL)) ** nL
-            * np.exp(-(aL ** 2) / 2)
+            * np.exp(-(aL**2) / 2)
             * (nL / np.abs(aL) - np.abs(aL) - (x - mCB) / sCB) ** (-nL),
             lambda x: A
             * (nR / np.abs(aR)) ** nR
-            * np.exp(-(aR ** 2) / 2)
+            * np.exp(-(aR**2) / 2)
             * (nR / np.abs(aR) - np.abs(aR) + (x - mCB) / sCB) ** (-nR),
-            lambda x: A * np.exp(-((x - mCB) ** 2) / (2 * sCB ** 2)),
+            lambda x: A * np.exp(-((x - mCB) ** 2) / (2 * sCB**2)),
         ],
     )
 
@@ -247,7 +247,7 @@ plt.xticks(bin_edges[::4], bin_edges[::4].astype(int), size=20)
 plt.yticks(size=20)
 plt.legend(fontsize=20)
 if save:
-    plt.savefig("CB_fit.pdf")
+    plt.savefig("src/plots/CB_fit.pdf")
 
 
 ########################################################################################################################
@@ -291,4 +291,4 @@ plt.legend(loc="upper right", fontsize=20)
 plt.tight_layout()
 plt.grid()
 if save:
-    plt.savefig("final_fit.pdf")
+    plt.savefig("src/plots/final_fit.pdf")
