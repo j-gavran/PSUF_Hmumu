@@ -33,7 +33,7 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
         # Get correct weights
         wts = ds["CombWeight"]
         # for MC: sum of weights squared, for data: N
-        wts2 = wts ** 2
+        wts2 = wts**2
 
         # Firstly, get correct number of bin_values
         bin_values, _ = np.histogram(all_events, bins=n_bins, range=x_range, weights=wts)  # wts!
@@ -43,19 +43,21 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
         bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
         bin_errors = np.sqrt(y)
 
-        # Finally, save several arrays into a single file in uncompressed .npz format
-        if x_range is None:
-            save_name = f"{datadir_output}hist_range_custom_nbin-{len(n_bins)}_{label}.npz"
-        else:
-            save_name = f"{datadir_output}hist_range_{x_range[0]}-{x_range[1]}_nbin-{n_bins}_{label}.npz"
-
         if save_name:
             save_name = f"{datadir_output}{save_name}_{label}.npz"
+        else:
+            if x_range is None:
+                save_name = f"{datadir_output}hist_range_custom_nbin-{len(n_bins)}_{label}.npz"
+            else:
+                save_name = f"{datadir_output}hist_range_{x_range[0]}-{x_range[1]}_nbin-{n_bins}_{label}.npz"
 
         save_names.append(save_name)
 
+        # Save histogram to .npz file
         with open(save_name, "wb") as f:
             np.savez(f, bin_edges=bin_edges, bin_centers=bin_centers, bin_values=bin_values, bin_errors=bin_errors)
+
+        save_name = None
 
         f.close()
 
