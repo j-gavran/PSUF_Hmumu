@@ -17,7 +17,7 @@ def load_data(dataset, datadir):
     return dataset, store
 
 
-def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_range=None, save_name=None):
+def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_range=None, save_hist_name=None):
     if type(n_bins) is not int and x_range is not None:
         raise ValueError("If n_bins is a sequence, x_range must be None.")
 
@@ -43,8 +43,8 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
         bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
         bin_errors = np.sqrt(y)
 
-        if save_name:
-            save_name = f"{datadir_output}{save_name}_{label}.npz"
+        if save_hist_name is not None:
+            save_name = f"{datadir_output}{save_hist_name}_{label}.npz"
         else:
             if x_range is None:
                 save_name = f"{datadir_output}hist_range_custom_nbin-{len(n_bins)}_{label}.npz"
@@ -56,8 +56,6 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
         # Save histogram to .npz file
         with open(save_name, "wb") as f:
             np.savez(f, bin_edges=bin_edges, bin_centers=bin_centers, bin_values=bin_values, bin_errors=bin_errors)
-
-        save_name = None
 
         f.close()
 
@@ -147,6 +145,14 @@ if __name__ == "__main__":
     datasets = [ds_bkg, ds_sig, ds_data]
     labels = ["Background", "Signal", "Data"]
 
-    dirs = make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_range=x_range)
+    dirs = make_histograms(
+        datadir_input,
+        datadir_output,
+        labels,
+        datasets,
+        n_bins,
+        x_range=x_range,
+        save_hist_name="my_hist",
+    )
 
     print(f"Saved histograms to {dirs} with {n_bins}.")
