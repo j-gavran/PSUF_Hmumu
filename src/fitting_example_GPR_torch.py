@@ -135,22 +135,6 @@ class RescaleData:
             return unumpy.nominal_values(res), unumpy.std_devs(res)
 
 
-class SklearnLikeRBFKernel(gpytorch.kernels.RBFKernel):
-    def __init__(self, *args, add_to_daig=None, **kwargs):
-        """See: https://github.com/scikit-learn/scikit-learn/blob/d99b728b3a7952b2111cf5e0cb5d14f92c6f3a80/sklearn/gaussian_process/_gpr.py#L343"""
-        super().__init__(*args, **kwargs)
-        if add_to_daig is not None:
-            self.add_to_daig = torch.diag(add_to_daig)
-        else:
-            self.add_to_daig = add_to_daig
-
-    def forward(self, *args, **params):
-        if self.training:
-            return super().forward(*args, **params) + self.add_to_daig
-        else:
-            return super().forward(*args, **params)
-
-
 class ExactGPModel(gpytorch.models.ExactGP):
     def __init__(self, train_x, train_y, likelihood, alpha=None):
         """See: https://docs.gpytorch.ai/en/stable/examples/01_Exact_GPs/Simple_GP_Regression.html#GPyTorch-Regression-Tutorial"""
@@ -158,13 +142,19 @@ class ExactGPModel(gpytorch.models.ExactGP):
         self.mean_module = gpytorch.means.ConstantMean()
 
         if alpha is not None:
-            self.covar_module = gpytorch.kernels.ScaleKernel(SklearnLikeRBFKernel(add_to_daig=alpha))
+            self.alpha = torch.diag(alpha)
         else:
-            self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
+            self.alpha = None
+
+        self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
 
     def forward(self, x):
         mean_x = self.mean_module(x)
-        covar_x = self.covar_module(x)
+        if self.alpha is not None and self.training:
+            covar_x = self.covar_module(x) + self.alpha
+        else:
+            covar_x = self.covar_module(x)
+
         return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
 
 
@@ -291,6 +281,8 @@ def plot_predictions(lower_upper, train_x, train_y, test_x, mean, true_x=None, t
 
 
 if __name__ == "__main__":
+    # good tutorial for simple GP with gpytorch: https://d2l.ai/chapter_gaussian-processes/gp-inference.html
+
     hep.style.use(hep.style.ATLAS)
 
     histograms = prepare_histograms(gamma=100.0)
@@ -319,7 +311,8 @@ if __name__ == "__main__":
     test_x, test_x_std = test_x_data()
 
     # train GPR
-    model, likelihood, losses = train_gpr(train_x, train_y, var=train_y_std**2, epochs=500)
+    model, likelihood, losses = train_gpr(train_x, train_y, var=None, epochs=500)
+    # model, likelihood, losses = train_gpr(train_x, train_y, var=train_y_std**2, epochs=500)
     plot_losses(*losses)
 
     # test GPR
