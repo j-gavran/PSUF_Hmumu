@@ -33,8 +33,8 @@ funkcijo/vrednosti predalov $`s(x_k)`$. Primer je na voljo v `fitting_example_CB
 6. Ker simulacija ozadja ni vedno najboljša, se po navadi za oceno ozadja raje vzame izmerjene podatke, pri čemer pa je 
 potrebno izključiti območje, kjer pričakujemo signal ("blinding") - nočemo fitati še signala! Prilagodi torej funkcijo 
 histogramu podatkov, da dobiš dobro oceno za ozadje ("background from data") in pri tem pazi, da pri fitu **ne** 
-upoštevaš območja okrog mase Higgsovega bozona, npr. izključi interval 120 - 130 GeV. Dobiš funkcijo / vrednosti 
-predalov $`b(x_k)`$. V tem koraku preizkusi tudi metode GPR za fitanje ozadja iz podatkov. Pomagaš si lahko s primeri v
+upoštevaš območja okrog mase Higgsovega bozona, npr. izključi interval 120 - 130 GeV. Dobiš funkcijo/vrednosti 
+predalov $`b(x_k)`$. V tem koraku preizkusi tudi ML metode (KRR, SVM, GPR, ...) za fitanje ozadja iz podatkov. Pomagaš si lahko s primeri v
 `fitting_example_GPR_{simple, smooth, logarithm, torch}.py`.
 
 8. Od podatkov odštej čim bolje zglajeno ozadje, ki si ga dobil/-a v prejšnji točki, da dobiš ekstrahiran signal. 
