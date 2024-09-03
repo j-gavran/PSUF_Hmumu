@@ -10,7 +10,7 @@ import torch
 from tqdm import tqdm
 from uncertainties import unumpy
 
-from src.visualize_data import simple_histogram_plot
+from helpers.visualize_data import simple_histogram_plot
 
 
 def load_histogram(hist_file):

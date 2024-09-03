@@ -160,11 +160,10 @@ cython_debug/
 #.idea/
 
 .DS_Store
-.vscode
 
 psuf-venv/
 
 *.npz
 *.npy
 *.h5
-src/solutions_*.ipynb
+helpers/solutions_*.ipynb
