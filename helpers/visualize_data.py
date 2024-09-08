@@ -11,7 +11,7 @@ def visualize_histograms(
     path_to_original_histograms,
     output_filename,
     logy=True,
-    ymax=5 * 10 ** 7,
+    ymax=5 * 10**7,
     yloc=0.95,
     color_background="green",
     color_signal="red",
@@ -19,7 +19,6 @@ def visualize_histograms(
     color_data="black",
     save=True,
 ):
-    # Load data to dictionary pldict:
     pldict = {}
 
     for label in labels:
@@ -125,34 +124,3 @@ def visualize_histograms(
         plt.close()
     else:
         return f, (ax1, ax2)
-
-
-def simple_histogram_plot(hist, plot_errs=False, **hist_kwargs):
-    xs, bin_edges, ys, bin_errors = hist
-
-    xwidths = bin_edges[1:] - bin_edges[:-1]
-
-    if plot_errs:
-        plt.errorbar(xs, ys, xerr=0.5 * xwidths, yerr=bin_errors, fmt=".", color="r", markersize=0, lw=0.5, zorder=10)
-        plt.fill_between(xs, ys - bin_errors, ys + bin_errors, color="r", alpha=0.2)
-
-    plt.hist(xs, bin_edges, weights=ys, histtype="step", **hist_kwargs)
-
-
-if __name__ == "__main__":
-    labels = ["Background", "Signal", "Data"]
-    hist_name = "mass_mm_higgs"
-
-    path_to_original_histograms = "src/DATA/original_histograms/"
-    output_filename = f"src/plots/{hist_name}.pdf"
-
-    logy = True  # logscale
-    ymax = 5 * 10 ** 7  # graph ymax value
-    yloc = 0.95  # legend y location
-
-    color_background = "green"
-    color_signal = "red"
-    color_data_bkg = "blue"
-    color_data = "black"
-
-    visualize_histograms(labels, hist_name, path_to_original_histograms, output_filename)

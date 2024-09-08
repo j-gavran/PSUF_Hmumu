@@ -10,11 +10,14 @@ from tqdm import tqdm
 def load_data(dataset, datadir):
     """Function for loading .h5 datasets"""
     infile = os.path.join(datadir, dataset + ".h5")
+
     print("Loading {}...".format(infile))
+
     store = pd.HDFStore(infile, "r")
     dataset = store["ntuple"]
+    store.close()
 
-    return dataset, store
+    return dataset
 
 
 def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_range=None, save_hist_name=None):
@@ -25,7 +28,9 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
 
     for label, dataset in zip(labels, datasets):
         # Load dataset
-        ds, _ = load_data(dataset, datadir_input)
+        ds = load_data(dataset, datadir_input)
+
+        print(f"Creating histogram for {label}...")
 
         # Get simulated (Background, Signal) or measured (Data) data
         all_events = ds["Muons_Minv_MuMu_Paper"]
@@ -120,16 +125,13 @@ def url_download(url, data_dir, chunk_size=1024):
 
 if __name__ == "__main__":
     # User defined: -> play around with n_bins and x_range
-    datadir_input = "src/DATA/raw_data/"  # Directory to raw data, change this!
-    datadir_output = "src/DATA/generated_histograms/"  # Directory to generated histograms, change/create this!
-
-    download_files = True
+    datadir_input = "data/raw_data/"  # Directory to raw data, change this!
+    datadir_output = "data/generated_histograms/"  # Directory to generated histograms, change/create this!
 
     # download files from cernbox
-    if download_files:
-        url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/mc_bkg_new.h5", datadir_input)
-        url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/mc_sig.h5", datadir_input)
-        url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/data.h5", datadir_input)
+    url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/mc_bkg_new.h5", datadir_input)
+    url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/mc_sig.h5", datadir_input)
+    url_download("https://cernbox.cern.ch/remote.php/dav/public-files/rd9b2rjzYxQ6jC2/data.h5", datadir_input)
 
     x_range = (110, 160)  # m_mumu energy interval (110.,160.) GeV for Higgs
 

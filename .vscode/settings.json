@@ -23,13 +23,12 @@
     "isort.args": [
         "--profile=black",
         "--line-length=120",
-        "--thirdparty=F9Columnar"
     ],
     "autoDocstring.docstringFormat": "numpy",
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${workspaceFolder}"
     },
     "python.envFile": "${workspaceFolder}/.env",
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
+    "python.defaultInterpreterPath": "${workspaceFolder}/psuf-venv/bin/python3",
     "python.terminal.activateEnvironment": true,
 }
