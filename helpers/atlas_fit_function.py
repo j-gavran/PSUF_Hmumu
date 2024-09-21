@@ -127,10 +127,12 @@ if __name__ == "__main__":
     def poly(x):
         return 1.0
 
+    # use curve_fit to fit the function
+
     plt.figure(figsize=(16, 8))
     x = np.linspace(110.0, 200.0, 100)
     plt.plot(x, atlas_invMass_mumu(poly(x), x), lw=2)
     plt.yscale("log")
     plt.tight_layout()
-    plt.savefig("src/plots/atlas_fit_function.pdf")
+    plt.savefig("helpers/plots/atlas_fit_function.pdf")
     plt.show()

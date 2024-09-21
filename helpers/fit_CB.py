@@ -1,4 +1,7 @@
-import matplotlib.pyplot as plt
+# ##################### #
+# EXAMPLE: Crystal Ball #
+# ##################### #
+
 import numpy as np
 from scipy.optimize import curve_fit
 
@@ -25,8 +28,8 @@ def CrystalBall(x, A, aL, aR, nL, nR, mCB, sCB):
 if __name__ == "__main__":
     fontsize = 16
 
-    # Load data
-    fileName = "src/DATA/original_histograms/mass_mm_higgs_Signal.npz"
+    # Load the data
+    fileName = "data/original_histograms/mass_mm_higgs_Signal.npz"
 
     with np.load(fileName) as data:
         bin_edges = data["bin_edges"]
@@ -45,34 +48,6 @@ if __name__ == "__main__":
     perr = np.sqrt(np.diag(pcov))
     A, aL, aR, nL, nR, mCB, sCB = popt
 
-    xs = np.linspace(110, 160, 501)
-    my_fit = np.array(CrystalBall(xs, A, aL, aR, nL, nR, mCB, sCB))
-    xerrs = 0.5 * (bin_edges[1:] - bin_edges[:-1])
-
-    plt.figure(figsize=(8, 4.5))
-    plt.errorbar(
-        bin_centers,
-        bin_values,
-        bin_errors,
-        xerrs,
-        marker="o",
-        markersize=5,
-        color="k",
-        ecolor="k",
-        ls="",
-        label="Original histogram",
-    )
-    plt.plot(xs, my_fit, "r-", label="signal fit CB")
-    plt.xlabel(r"$m_{\mu \mu}$", fontsize=fontsize)
-    plt.ylabel("Number of events", fontsize=fontsize)
-    plt.legend(fontsize=fontsize)
-    plt.xticks(size=fontsize)
-    plt.yticks(size=fontsize)
-    plt.grid()
-    plt.tight_layout()
-    plt.savefig("src/plots/fitting_example_CB.pdf")
-    plt.show()
-
     # Print out the parameters
     print(
         "A: {A:.3f}\naL: {aL:.3f}\naR: {aR:.3f}\nnL: {nL:.3f}\nnR: {nR:.3f}\nmCB: {mCB:.3f}\nsCB: {sCB:.3f}".format(
@@ -85,3 +60,7 @@ if __name__ == "__main__":
             sCB=sCB,
         )
     )
+
+    # Fit values for plotting
+    xs = np.linspace(110, 160, 501)
+    fit_values = np.array(CrystalBall(xs, A, aL, aR, nL, nR, mCB, sCB))

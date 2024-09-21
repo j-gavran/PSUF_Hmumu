@@ -1,3 +1,7 @@
+# ######################### #
+# EXAMPLE: GPR in log scale #
+# ######################### #
+
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
@@ -10,7 +14,7 @@ plt.rcParams.update({"axes.labelsize": 16, "xtick.labelsize": 14, "ytick.labelsi
 np.random.seed(12345)
 
 # Load data
-inFileName = "src/DATA/original_histograms/mass_mm_higgs_Background.npz"
+inFileName = "data/original_histograms/mass_mm_higgs_Background.npz"
 with np.load(inFileName) as data:
     bin_centers = data["bin_centers"]
     bin_values = np.log(data["bin_values"])
@@ -81,6 +85,7 @@ axes["ratio"].errorbar(
 axes["ratio"].axhline(1, c="k", lw=1, alpha=0.7)
 axes["ratio"].set_xlabel(r"$m_{\mu\mu}$ [GeV]", fontsize=16)
 axes["ratio"].set_ylabel("Data/Pred.", fontsize=16)
+
 # Make ratio plot labels symmetric around 1.
 max = np.max(np.abs(axes["ratio"].get_yticks() - 1.0)) / 1.5
 axes["ratio"].set_ylim((1.0 - max, 1.0 + max))
@@ -97,4 +102,4 @@ ax_inner.set_xlim(signal_region)
 ax_inner.set_ylim((10.3, 11))
 ax_inner.grid()
 
-plt.savefig("src/plots/GPR_log.pdf")
+plt.savefig("helpers/plots/GPR_log.pdf")

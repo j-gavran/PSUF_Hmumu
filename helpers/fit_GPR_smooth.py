@@ -1,13 +1,17 @@
+# ################################ #
+# EXAMPLE: GPR with custom kernels #
+# ################################ #
+
+
 import matplotlib.pyplot as plt
 import numpy as np
+from custom_kernels import Gibbs, LinearNoiseKernel
 from scipy.optimize import curve_fit
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import ConstantKernel
 
-from custom_kernels import Gibbs, LinearNoiseKernel
-
 ########### User Defined Options ##########
-inFileName = "src/DATA/original_histograms/mass_mm_higgs_Background.npz"
+inFileName = "data/original_histograms/mass_mm_higgs_Background.npz"
 with np.load(inFileName) as data:
     bin_edges = data["bin_edges"]
     bin_centers = data["bin_centers"]
@@ -68,14 +72,15 @@ a, b = popt
 print("a,b", a, b)
 myBaseLine = np.array(fitfun(binshift, a, b))
 myBaseLine = (nEvts / np.sum(myBaseLine)) * myBaseLine
-""" print("mya",nEvts,bin_values[1:5])
-print("myb",np.sum(myBaseLine),myBaseLine[1:5])
-xerrs = 0.5*(bin_edges[1:]-bin_edges[:-1]) # or None
-plt.errorbar(bin_centers, bin_values, bin_errors, xerrs, fmt="none",color='b',ecolor='b',label='Original histogram') #fmt='.k'
-plt.plot(bin_centers, fitfun(binshift, *popt), 'r-',label='fit: a=%5.3f, b=%5.3f' % tuple(popt))
-plt.plot(bin_centers,myBaseLine,'g-', label='fit baseline')
-plt.legend()
-plt.savefig("m_mumu_fit.pdf",format="pdf") """
+
+# print("mya",nEvts,bin_values[1:5])
+# print("myb",np.sum(myBaseLine),myBaseLine[1:5])
+# xerrs = 0.5*(bin_edges[1:]-bin_edges[:-1]) # or None
+# plt.errorbar(bin_centers, bin_values, bin_errors, xerrs, fmt="none",color='b',ecolor='b',label='Original histogram') #fmt='.k'
+# plt.plot(bin_centers, fitfun(binshift, *popt), 'r-',label='fit: a=%5.3f, b=%5.3f' % tuple(popt))
+# plt.plot(bin_centers,myBaseLine,'g-', label='fit baseline')
+# plt.legend()
+# plt.savefig("m_mumu_fit.pdf",format="pdf")
 
 # Get estimates of different hyper-parameter bounds from the input template
 # Set bounds on the scaling of the GPR template (basically a maximum y-range)
@@ -311,6 +316,6 @@ ax2.tick_params(axis="both", which="major", length=12)
 ax2.tick_params(axis="both", which="minor", length=6)
 
 f.subplots_adjust(hspace=0)
-plt.savefig("src/plots/GPR_smooth.pdf", format="pdf")
+plt.savefig("helpers/plots/GPR_smooth.pdf", format="pdf")
 plt.show()
 plt.close()

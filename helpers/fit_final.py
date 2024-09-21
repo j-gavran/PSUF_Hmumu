@@ -4,9 +4,8 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.optimize import curve_fit
-
 from atlas_fit_function import atlas_invMass_mumu
+from scipy.optimize import curve_fit
 
 ########################################################################################################################
 # User defined
@@ -15,7 +14,7 @@ labels = ["Background", "Signal", "Data"]
 
 pldict = {}
 for label in labels:
-    with np.load("src/DATA/original_histograms/mass_mm_higgs_" + label + ".npz", "rb") as data:
+    with np.load("data/original_histograms/mass_mm_higgs_" + label + ".npz", "rb") as data:
         bin_centers = data["bin_centers"]
         bin_edges = data["bin_edges"]
         bin_values = data["bin_values"]
@@ -89,7 +88,7 @@ ax2.grid(True)
 
 f.tight_layout()
 if save:
-    plt.savefig("src/plots/SimBkg_fit.pdf")
+    plt.savefig("helpers/plots/SimBkg_fit.pdf")
 
 
 ########################################################################################################################
@@ -158,7 +157,7 @@ ax2.grid(True)
 
 f.tight_layout()
 if save:
-    plt.savefig("src/plots/DataBkg_fit.pdf")
+    plt.savefig("helpers/plots/DataBkg_fit.pdf")
 
 
 ########################################################################################################################
@@ -177,7 +176,7 @@ plt.legend(fontsize=20)
 plt.tight_layout()
 plt.grid()
 if save:
-    plt.savefig("src/plots/Extracted_signal.pdf")
+    plt.savefig("helpers/plots/Extracted_signal.pdf")
 
 
 ########################################################################################################################
@@ -247,7 +246,7 @@ plt.xticks(bin_edges[::4], bin_edges[::4].astype(int), size=20)
 plt.yticks(size=20)
 plt.legend(fontsize=20)
 if save:
-    plt.savefig("src/plots/CB_fit.pdf")
+    plt.savefig("helpers/plots/CB_fit.pdf")
 
 
 ########################################################################################################################
@@ -291,4 +290,4 @@ plt.legend(loc="upper right", fontsize=20)
 plt.tight_layout()
 plt.grid()
 if save:
-    plt.savefig("src/plots/final_fit.pdf")
+    plt.savefig("helpers/plots/final_fit.pdf")

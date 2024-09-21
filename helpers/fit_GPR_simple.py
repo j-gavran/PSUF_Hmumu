@@ -1,3 +1,8 @@
+# ################### #
+# EXAMPLE: Simple GPR #
+# ################### #
+
+
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
@@ -9,7 +14,7 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel, Matern
 np.random.seed(12345)
 
 # Load data
-inFileName = "src/DATA/original_histograms/mass_mm_higgs_Background.npz"
+inFileName = "data/original_histograms/mass_mm_higgs_Background.npz"
 with np.load(inFileName) as data:
     bin_edges = data["bin_edges"]
     bin_centers = data["bin_centers"]
@@ -60,4 +65,4 @@ plt.scatter(bin_centers, bin_values, color="r", linewidth=0.5, marker="o", s=10)
 plt.plot(X_to_predict, y_pred, color="k")
 plt.fill_between(X_to_predict.ravel(), y_pred - sigma, y_pred + sigma)
 plt.tight_layout()
-plt.savefig("src/plots/GPR_simple.pdf")
+plt.savefig("helpers/plots/GPR_simple.pdf")
