@@ -4,11 +4,11 @@ import numpy as np
 
 
 def make_asimov_data(multiply, data_path, histo_name, labels, save_asimov):
-    """
-    The Asimov dataset is a hypothetical dataset that is used to estimate the expected sensitivity of
-    a particle physics experiment. It is constructed by adding a multiple of the signal to the dataset, where
-    the multiple is chosen such that the signal has the same number of events as would be expected from a given
-    theoretical model. The resulting dataset is then used to calculate the expected significance of the signal.
+    """The Asimov dataset is a hypothetical dataset that is used to estimate the expected sensitivity of a particle
+    physics experiment. It is constructed by adding a multiple of the signal to the dataset, where the multiple is chosen
+    such that the signal has the same number of events as would be expected from a given theoretical model. The resulting
+    dataset is then used to calculate the expected significance of the signal.
+
     """
 
     # Load data
@@ -47,8 +47,8 @@ def make_asimov_data(multiply, data_path, histo_name, labels, save_asimov):
 
 if __name__ == "__main__":
     multiply = 100
-    data_path = "DATA/generated_histograms"
-    histo_name = "hist_range_110-160_nbin-25_"
+    data_path = "data/generated_histograms"
+    histo_name = "my_hist_"
     labels = ["Background", "Signal", "Data"]
     save_asimov = False
 

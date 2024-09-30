@@ -5,6 +5,20 @@ from matplotlib import ticker
 from matplotlib.ticker import AutoMinorLocator, LogLocator, NullFormatter
 
 
+def plot_simple_histogram(ax, h, plot_errs=False, **hist_kwargs):
+    xs, bin_edges, ys, bin_errors = h  # list of bin centers, bin edges, bin values, bin errors
+
+    xwidths = bin_edges[1] - bin_edges[0]  # non uniform bin widths not supported
+
+    if plot_errs:
+        ax.errorbar(xs, ys, xerr=0.5 * xwidths, yerr=bin_errors, fmt=".", color="r", markersize=0, lw=0.5, zorder=10)
+        ax.fill_between(xs, ys - bin_errors, ys + bin_errors, color="r", alpha=0.2)
+
+    ax.hist(xs, bin_edges, weights=ys, histtype="step", **hist_kwargs)
+
+    return ax
+
+
 def visualize_histograms(
     labels,
     hist_name,
@@ -59,7 +73,9 @@ def visualize_histograms(
     ax1.set_xlabel(r"$m_{\mu\mu}$ [GeV]")
 
     ax1.set_xlim([xedges[0], xedges[-1]])
-    ax1.set_ylim([0.01, ymax])
+
+    if ymax is not None:
+        ax1.set_ylim([0.01, ymax])
 
     # Prettyfy #1
     formatter = ticker.ScalarFormatter(useMathText=True)

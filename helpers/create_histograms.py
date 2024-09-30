@@ -67,7 +67,7 @@ def make_histograms(datadir_input, datadir_output, labels, datasets, n_bins, x_r
     return save_names
 
 
-def load_histogram(path_to_hist, file_name, label):
+def load_histogram(path_to_hist, file_name, label, return_dct=False):
     """Load histogram from .npz file."""
 
     if label.lower() not in ["background", "signal", "data"]:
@@ -79,7 +79,10 @@ def load_histogram(path_to_hist, file_name, label):
         bin_values = data["bin_values"]
         bin_errors = data["bin_errors"]
 
-    return bin_centers, bin_edges, bin_values, bin_errors
+    if return_dct:
+        return {"centers": bin_centers, "edges": bin_edges, "values": bin_values, "errors": bin_errors}
+    else:
+        return bin_centers, bin_edges, bin_values, bin_errors
 
 
 def url_download(url, data_dir, chunk_size=1024):
