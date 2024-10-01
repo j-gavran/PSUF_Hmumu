@@ -1,5 +1,5 @@
 # #################### #
-# EXAMPLE: fti to data #
+# EXAMPLE: fit to data #
 # #################### #
 
 import matplotlib.pyplot as plt
