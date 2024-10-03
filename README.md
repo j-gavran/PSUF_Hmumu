@@ -30,10 +30,6 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje n
 
 10. Ker je izmerjenega signala še zelo malo, predlagamo, da postopek najprej narediš z umetno napihnjenim signalom - le  tega množi z nekim faktorjem (npr. $`\gamma = 100`$) in ga dodaj podatkom: $`s_\textrm{new}(x_k) = \gamma \cdot s(x_k)`$ in $`d(x_k) = d(x_k) + s_\textrm{new}(x_k)`$. Ker bo signal na ta način lepo izstopal iz ozadja, ga boš lažje izluščil/-a. Primer napihnjenega signala je v skripti `create_asimov.py`.
 
-#### Dodatno
-
-
-
 ## Praktični napotki
 
 - Na vajah bomo uporabljali operacijski sistem Linux (npr. [Ubuntu](https://ubuntu.com/desktop)). Za Windows je priporočljiva uporaba [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (WSL), ki vam da dostop do Linux okolja na enostaven način.
@@ -101,7 +97,7 @@ Za izhod iz okolja se uporabi ukaz:
 deactivate
 ```
 
-Vse knjižnice si lahko namestiš tudi direktno brez uporabe tega okolja.
+Vse knjižnice si lahko namestiš tudi direktno brez uporabe tega okolja. Če si na Marvinu, je okolje že postavljeno v `/data/virtualenvs/virtenv-py310-PSUF/bin/activate`.
 
 ### Namestitev knjižnic
 
