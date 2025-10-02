@@ -1,2 +1,2 @@
-torch==2.4.0
-gpytorch==1.12
+torch>=2.4.0
+gpytorch>=1.12
