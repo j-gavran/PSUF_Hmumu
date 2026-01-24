@@ -1,12 +1,12 @@
 # Praktikum strojnega učenja v fiziki
 
-[Povezava](https://ucilnica.fmf.uni-lj.si/course/view.php?id=520) do spletne učilnice predmeta.
+[Povezava](https://ucilnica.fmf.uni-lj.si/course/view.php?id=698) do spletne učilnice predmeta.
 
 ## Modeliranje 1-D porazdelitve: razpadi Higgsovega bozona $`H\rightarrow\mu\mu`$
 
 ### Navodila in usmeritve
 
-V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje naloge.
+V nadaljevanju sledijo podrobnejša navodila in usmeritve za reševanje naloge.
 
 #### 1. del
 
@@ -30,41 +30,6 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za lažje reševanje n
 
 10. Ker je izmerjenega signala še zelo malo, predlagamo, da postopek najprej narediš z umetno napihnjenim signalom - le  tega množi z nekim faktorjem (npr. $`\gamma = 100`$) in ga dodaj podatkom: $`s_\textrm{new}(x_k) = \gamma \cdot s(x_k)`$ in $`d(x_k) = d(x_k) + s_\textrm{new}(x_k)`$. Ker bo signal na ta način lepo izstopal iz ozadja, ga boš lažje izluščil/-a. Primer napihnjenega signala je v skripti `create_asimov.py`.
 
-## Praktični napotki
-
-- Na vajah bomo uporabljali operacijski sistem Linux (npr. [Ubuntu](https://ubuntu.com/desktop)). Za Windows je priporočljiva uporaba [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (WSL), ki vam da dostop do Linux okolja na enostaven način.
-
-- Za programiranje je trenutno najbolj priljubljen editor [VSCode](https://code.visualstudio.com/). Zelo dober tutorial za uporabo VSCode s Pythonom je [tukaj](https://pycon.switowski.com/).
-
-- Celoten predmet je zasnovan na uporabi programskega jezika Pythona, ker se največ uporablja v strojnem učenju. Če še nimaš izkušenj s Pythonom, si lahko pomagaš s [Python tutorialom](https://lectures.scientific-python.org/).
-
-### Računanje na daljavo
-
-Uporabiš lahko računalnik MARVIN na FMF, na katerem lahko poganjate vaše domače naloge. Na spletni učilnici si ustvari račun, geslo dobiš po mailu. Na tem strežniku lahko zaganjaš zahtevnejše izračune v sistemu Linux, tako ti sploh ni treba imeti kode lokalno. Dostopen je preko ssh:
-- uporabniki Linux-ov, macOS dostopate preko terminala z `ssh <username>@marvin.fmf.uni-lj.si`
-- uporabniki Windows-ov:
-    - preko terminala, če imate naložen ssh client
-    -  Preprosteje: Naložite si [MobaXterm](https://mobaxterm.mobatek.net/)
-- z VSCode lahko dostopate preko [Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extensiona
-
-Če želiš zapreti terminal (s tem se zapre tudi ssh), vendar pustiti program teči, uporabi [screen](https://linuxize.com/post/how-to-use-linux-screen/):
-
-```shell
-screen -S <session_name>
-```
-
-Za izhod iz screena uporabi kombinacijo tipk `Ctrl + A` in nato `Ctrl + D`. Za ponovni vstop v screen uporabi:
-
-```shell
-screen -r <session_name>
-```
-
-ki ga dobiš z 
-
-```shell
-screen -ls
-```
-
 ### Pridobitev kode iz repozitorija
 
 ```shell
@@ -72,8 +37,6 @@ git clone https://github.com/j-gavran/PSUF_Hmumu.git
 ```
 
 ### Postavitev virtualnega okolja
-
-Ideja virtualnega okolja je, da se izolira okolje, v katerem se izvajajo programi, od okolja, ki je na računalniku. Tako se lahko v tem "virtualnem" okolju namesti samo tiste knjižnice, ki so potrebne za izvajanje določenih programov.
 
 Virtualno okolje se naloži preko pip-a:
 
@@ -88,20 +51,20 @@ python -m venv .venv
 ```
 
 kjer `.venv` predstavlja ime virtualnega okolja. To okolje se aktivira z ukazom:
+
 ```shell
 source .venv/bin/activate
 ```
 
 Za izhod iz okolja se uporabi ukaz:
+
 ```shell
 deactivate
 ```
 
-Vse knjižnice si lahko namestiš tudi direktno brez uporabe tega okolja. Če si na Marvinu, je okolje že postavljeno v `/data/virtualenvs/virtenv-py310-PSUF/bin/activate`.
-
 ### Namestitev knjižnic
 
-V virtualnem okolju se namestijo knjižnice, ki so potrebne za izvajanje programa. Knjižnice se namestijo z ukazom:
+Knjižnice se namestijo z ukazom:
 
 ```shell
 pip install -r requirements.txt
@@ -112,20 +75,3 @@ Probleme s Python path importi se reši z ukazom iz terminala (v direktoriju teg
 ```shell
 export PYTHONPATH=.
 ```
-
-### Uporabne bash komande
-
-O komandah se lahko naučiš več z uporabo `man`, npr. `man pwd`. Lahko pa tudi z `<komanda> --help`.
-
-- `pwd` (print working directory) - izpiše trenutno delovno mapo
-- `cd <path>` (change directory) - spremeni trenutno delovno mapo na `<path>`
-    - `cd .` - trenutna mapa
-    - `cd ..` - pojdi eno mapo nazaj
-- `ls <path>` (list) - izpiši datoteke na `<path>` poziciji
-- `cp <to> <sem>` (copy) - kopiraj `<to>` datoteko `<sem>`
-- `mv <to> <sem>` (move) - premakni `<to>` datoteko `<sem>`
-    - uporabno tudi za preimenovanje datoteke, npr. `foo.txt` v `bar.txt`: `mv foo.txt bar.txt`
-- `rm <file>` oz. `rm -r <foldername>` (remove) - izbriši `<file>` datoteko ali `<foldername>` mapo
-- `pico <file>` oz. `nano <file>` - odpre `<file>` datoteko v preprostem urejevalniku
-- `touch <file>` - ustvari prazno datoteko `<file>`
-- `cat <file>` - izpiše vsebino datoteke `<file>`
