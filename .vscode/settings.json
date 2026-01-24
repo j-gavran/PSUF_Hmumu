@@ -11,6 +11,7 @@
             "source.organizeImports": "explicit"
         }
     },
+    "ruff.lineLength": 120,
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
     "python.terminal.activateEnvironment": true
 }

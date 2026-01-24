@@ -10,9 +10,9 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za reševanje naloge.
 
 #### 1. del
 
-1. Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!) s pomočjo predpripravljene skripte `create_histograms.py`, pri kateri lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a. Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imaš že nekaj generiranih histogramov v `data/original_histograms/`, ki jih lahko uporabiš namesto generacije novih histogramov in nalaganja podatkov.
+1. Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!). Zgled je v `create_histograms.py`. Pri tem lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a. Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imaš že nekaj generiranih histogramov v `data/original_histograms/`, ki jih lahko uporabiš namesto generacije novih histogramov in nalaganja podatkov.
 
-2. Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko izrišeš s pomočjo skripte `visualize_data.py` (ustrezno s prejšnjo točko spremeni ime datotek, ki jih nalagaš).
+2. Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko narišeš. Zgled risanja histogramov je v `visualize_data.py`.
 
 3. Preveri, če so napake res pravilno upoštevane. Lahko jih namenoma pokvariš in ponoviš prva dva koraka, da vidiš vpliv.
 
