@@ -84,12 +84,12 @@ pip install virtualenv
 
 in se ga postavi z ukazom:
 ```shell
-python -m venv psuf-venv
+python -m venv .venv
 ```
 
-kjer `psuf-venv` predstavlja ime virtualnega okolja. To okolje se aktivira z ukazom:
+kjer `.venv` predstavlja ime virtualnega okolja. To okolje se aktivira z ukazom:
 ```shell
-source ./psuf-venv/bin/activate
+source .venv/bin/activate
 ```
 
 Za izhod iz okolja se uporabi ukaz:
