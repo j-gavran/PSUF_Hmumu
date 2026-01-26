@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from uncertainties import unumpy
 
-from helpers.create_histograms import url_download
+from helpers.downloader import url_download
 
 
 class HistMaker:
@@ -189,6 +189,13 @@ class Hist:
     values: np.ndarray
     errors: np.ndarray
 
+    def get_values(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        return self.edges, self.centers, self.values, self.errors
+
+    @property
+    def hist_range(self) -> tuple[float, float]:
+        return self.edges[0], self.edges[-1]
+
     @property
     def uarray(self) -> unumpy.uarray:
         return unumpy.uarray(self.values, self.errors)
@@ -232,6 +239,38 @@ class Hist:
             f"total={np.sum(self.values):.3g})"
         )
 
+    def blind(self, x_min: float, x_max: float) -> Hist:
+        blind_centers_m = (self.centers <= x_min) | (self.centers >= x_max)  # bool mask for centers
+        blind_edges_m = (self.edges <= x_min) | (self.edges > x_max)  # bool mask for edges
+
+        return Hist(
+            edges=self.edges[blind_edges_m],
+            centers=self.centers[blind_centers_m],
+            values=self.values[blind_centers_m],
+            errors=self.errors[blind_centers_m],
+        )
+
+    def __getitem__(self, mask: np.ndarray) -> Hist:
+        if not isinstance(mask, np.ndarray) or mask.dtype != bool:
+            raise TypeError("Mask must be a boolean numpy array.")
+
+        if len(mask) != len(self.centers):
+            raise ValueError(f"Mask length ({len(mask)}) must match number of bins ({len(self.centers)}).")
+
+        centers_masked = self.centers[mask]
+        values_masked = self.values[mask]
+        errors_masked = self.errors[mask]
+
+        indices = np.where(mask)[0]
+        if len(indices) == 0:
+            raise ValueError("Mask selected no bins.")
+
+        # get edge indices (need to include the right edge of the last bin)
+        edge_indices = np.concatenate([indices, [indices[-1] + 1]])
+        edges_masked = self.edges[edge_indices]
+
+        return Hist(edges=edges_masked, centers=centers_masked, values=values_masked, errors=errors_masked)
+
     def __str__(self) -> str:
         lines = [
             f"Histogram with {len(self.centers)} bins",
@@ -251,6 +290,13 @@ class RegionHist:
 
     def __repr__(self) -> str:
         return f"RegionHist(background={repr(self.background)}, signal={repr(self.signal)}, data={repr(self.data)})"
+
+    def blind(self, x_min: float, x_max: float, regions: list[str]) -> RegionHist:
+        return RegionHist(
+            background=self.background.blind(x_min, x_max) if "background" in regions else self.background,
+            signal=self.signal.blind(x_min, x_max) if "signal" in regions else self.signal,
+            data=self.data.blind(x_min, x_max) if "data" in regions else self.data,
+        )
 
     def __str__(self) -> str:
         lines = ["Region Histograms:", ""]

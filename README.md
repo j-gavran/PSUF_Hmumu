@@ -10,9 +10,9 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za reševanje naloge.
 
 #### 1. del
 
-1. Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!). Zgled je v `create_histograms.py`. Pri tem lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a. Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imaš že nekaj generiranih histogramov v `data/original_histograms/`, ki jih lahko uporabiš namesto generacije novih histogramov in nalaganja podatkov.
+1. Iz surovih ("raw") podatkov zgeneriraj svoje histograme (priporočeno!). Pri tem lahko spreminjaš število predalov ("bin"-ov) in $`m_{\mu\mu}`$ interval, ki ga boš opazoval/-a. Histogrami (mejne in sredinske $`x`$ vrednosti predalov, vrednosti in napake) se shranijo v formatu `.npz`. Na voljo imaš že nekaj generiranih histogramov v `data/original_histograms/`, ki jih lahko uporabiš namesto generacije novih histogramov in nalaganja podatkov.
 
-2. Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko narišeš. Zgled risanja histogramov je v `visualize_data.py`.
+2. Ko imaš zgenerirane svoje histograme (ali pa uporabiš že narejene), jih lahko narišeš.
 
 3. Preveri, če so napake res pravilno upoštevane. Lahko jih namenoma pokvariš in ponoviš prva dva koraka, da vidiš vpliv.
 
@@ -22,13 +22,13 @@ V nadaljevanju sledijo podrobnejša navodila in usmeritve za reševanje naloge.
 
 #### 2. del
 
-6. Ker simulacija ozadja ni vedno najboljša, se po navadi za oceno ozadja raje vzame izmerjene podatke, pri čemer pa je potrebno izključiti območje, kjer pričakujemo signal ("blinding") - nočemo fitati še signala! Prilagodi torej funkcijo histogramu podatkov, da dobiš dobro oceno za ozadje ("background from data") in pri tem pazi, da pri fitu **ne** upoštevaš območja okrog mase Higgsovega bozona, npr. izključi interval 120 - 130 GeV. Dobiš funkcijo/vrednosti predalov $`b(x_k)`$. V tem koraku preizkusi tudi ML metode regresije (KRR, SVR, GPR, ...) za fitanje ozadja iz podatkov. Pomagaš si lahko s primeri v `fit_GPR_{simple, smooth, logarithm}.py`.
+1. Ker simulacija ozadja ni vedno najboljša, se po navadi za oceno ozadja raje vzame izmerjene podatke, pri čemer pa je potrebno izključiti območje, kjer pričakujemo signal ("blinding") - nočemo fitati še signala! Prilagodi torej funkcijo histogramu podatkov, da dobiš dobro oceno za ozadje ("background from data") in pri tem pazi, da pri fitu **ne** upoštevaš območja okrog mase Higgsovega bozona, npr. izključi interval 120 - 130 GeV. Dobiš funkcijo/vrednosti predalov $`b(x_k)`$. V tem koraku preizkusi tudi ML metode regresije (KRR, SVR, GPR, ...) za fitanje ozadja iz podatkov. 
 
-8. Od podatkov odštej čim bolje zglajeno ozadje, ki si ga dobil/-a v prejšnji točki, da dobiš ekstrahiran signal. Če so vrednosti podatkov $`d(x_k)`$, dobimo ekstrahiran signal $`y(x_k)`$ kot $`y(x_k) = d(x_k) - b(x_k)`$.
+2. Od podatkov odštej čim bolje zglajeno ozadje, ki si ga dobil/-a v prejšnji točki, da dobiš ekstrahiran signal. Če so vrednosti podatkov $`d(x_k)`$, dobimo ekstrahiran signal $`y(x_k)`$ kot $`y(x_k) = d(x_k) - b(x_k)`$.
 
-9. Na ekstrahiran signal fitaj CB funkcijo s prostimi parametri, ki si jih dobil/-a v točki 5 tako, da ji v resnici prilagodiš le nov normalizacijski faktor, npr.: $`\alpha \cdot s(x_k)`$. Optimalno je, da je le-ta blizu 1.
+3. Na ekstrahiran signal fitaj CB funkcijo s prostimi parametri, ki si jih dobil/-a v točki 5 tako, da ji v resnici prilagodiš le nov normalizacijski faktor, npr.: $`\alpha \cdot s(x_k)`$. Optimalno je, da je le-ta blizu 1.
 
-10. Ker je izmerjenega signala še zelo malo, predlagamo, da postopek najprej narediš z umetno napihnjenim signalom - le  tega množi z nekim faktorjem (npr. $`\gamma = 100`$) in ga dodaj podatkom: $`s_\textrm{new}(x_k) = \gamma \cdot s(x_k)`$ in $`d(x_k) = d(x_k) + s_\textrm{new}(x_k)`$. Ker bo signal na ta način lepo izstopal iz ozadja, ga boš lažje izluščil/-a. Primer napihnjenega signala je v skripti `create_asimov.py`.
+4.  Ker je izmerjenega signala še zelo malo, predlagamo, da postopek najprej narediš z umetno napihnjenim signalom - le  tega množi z nekim faktorjem (npr. $`\gamma = 100`$) in ga dodaj podatkom: $`s_\textrm{new}(x_k) = \gamma \cdot s(x_k)`$ in $`d(x_k) = d(x_k) + s_\textrm{new}(x_k)`$. Ker bo signal na ta način lepo izstopal iz ozadja, ga boš lažje izluščil/-a.
 
 ### Pridobitev kode iz repozitorija
 

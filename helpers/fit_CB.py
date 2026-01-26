@@ -1,7 +1,3 @@
-# ##################### #
-# EXAMPLE: Crystal Ball #
-# ##################### #
-
 import numpy as np
 from scipy.optimize import curve_fit
 
@@ -60,7 +56,3 @@ if __name__ == "__main__":
             sCB=sCB,
         )
     )
-
-    # Fit values for plotting
-    xs = np.linspace(110, 160, 501)
-    fit_values = np.array(CrystalBall(xs, A, aL, aR, nL, nR, mCB, sCB))
